@@ -13,6 +13,7 @@ namespace eggsss
         private TimeSpan pace;
         public int Value { get; set; }
         public bool Active { get; set; }
+        public CatcherState TrayNumber { get; set; }
 
         public int StepNumber
         {
@@ -27,6 +28,7 @@ namespace eggsss
             this.textures = textures;
             lastStepTime = createTime;
             this.pace = pace;
+            TrayNumber = trayNumber;
 
             if (trayNumber == CatcherState.TopLeft || trayNumber == CatcherState.BottomLeft)
             {

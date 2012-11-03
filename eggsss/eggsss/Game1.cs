@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using KinectActionCapture;
 using Microsoft.Xna.Framework;
@@ -20,13 +20,17 @@ namespace eggsss
         private List<Egg> eggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
-        SoundEffect explosionSound;
+        private SoundEffect catchSound;
+        private SoundEffect crashSound;
+        private SoundEffect moveSound0;
+        private SoundEffect moveSound1;
+        private SoundEffect moveSound2;
+        private SoundEffect moveSound3;
+        private SoundEffect gameOverSound;
         private KinectManager kinect;
         private StartResult kinectStartState;
 
-        //Number that holds the player score
         int score;
-        // The font used to display UI elements
         SpriteFont font;
 
         public Game1()
@@ -37,21 +41,23 @@ namespace eggsss
 
         protected override void Initialize()
         {
+            Start();
+            base.Initialize();
+        }
+
+        private void Start()
+        {
             cather = new Catcher();
             score = 0;
             random = new Random();
             eggs = new List<Egg>();
             kinect = new KinectManager();
-            kinectStartState = kinect.StartKinect();
-
-            // Initial egg spawn time
-            eggSpawnTime = new TimeSpan(5 * TimeSpan.TicksPerSecond); // 2 seconds
-
-            base.Initialize();
+            eggSpawnTime = new TimeSpan(5*TimeSpan.TicksPerSecond); // 2 seconds
         }
 
         protected override void LoadContent()
         {
+            kinectStartState = kinect.StartKinect();
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -107,10 +113,16 @@ namespace eggsss
                     Content.Load<Texture2D>("Egg/3-2"),
                     Content.Load<Texture2D>("Egg/3-3"),
                     Content.Load<Texture2D>("Egg/3-4"),
-                },
+                }
             };
 
-
+            catchSound = Content.Load<SoundEffect>("sound/catchSound");
+            crashSound = Content.Load<SoundEffect>("sound/crashSound");
+            moveSound0 = Content.Load<SoundEffect>("sound/moveSound0");
+            moveSound1 = Content.Load<SoundEffect>("sound/moveSound1");
+            moveSound2 = Content.Load<SoundEffect>("sound/moveSound2");
+            moveSound3 = Content.Load<SoundEffect>("sound/moveSound3");
+            gameOverSound = Content.Load<SoundEffect>("sound/gameOverSound");
         }
 
         /// <summary>
@@ -129,9 +141,8 @@ namespace eggsss
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Allows the game to exit
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                this.Exit();
+                Exit();
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 isPause = true;
@@ -141,10 +152,7 @@ namespace eggsss
 
             if (!isPause)
             {
-                // Update the player
                 UpdateCatcher(gameTime);
-
-                // Update eggs
                 UpdateEggs(gameTime);
             }
             base.Update(gameTime);
@@ -161,30 +169,45 @@ namespace eggsss
             for (int i = eggs.Count - 1; i >= 0; i--)
             {
                 var egg = eggs[i];
-                egg.Update(gameTime);
 
-                if (egg.Crushed)
+                if (egg.StepNumber == 4 && egg.TrayNumber == cather.State) // Ловим
                 {
                     eggs.RemoveAt(i);
+                    catchSound.Play();
+                    score++;
+                }
+                else
+                {
+                    egg.Update(gameTime);
 
-                    // Add an explosion
-                    AddExplosion(eggs[i].Position);
+                    if (egg.Crushed)
+                    {
+                        eggs.RemoveAt(i);
 
-                    // Play the explosion sound
-                    //explosionSound.Play();
-
-                    //Add to the player's score
-                    score += eggs[i].Value;
-
-                    AddCrushedEgg();
+                        AddCrushedEgg(eggs[i].TrayNumber);
+                        cather.Health--;
+                        crashSound.Play();
+                        if (cather.Health == 0)
+                        {
+                            gameOverSound.Play();
+                            Restart();
+                        }
+                    }
                 }
             }
         }
 
-        private void AddCrushedEgg()
+        private void Restart()
         {
-
+            score = 0;
+            cather.Health = 3;
         }
+
+        private void AddCrushedEgg(CatcherState position)
+        {
+            //throw new NotImplementedException();
+        }
+
 
         private void UpdateCatcher(GameTime gameTime)
         {
@@ -237,12 +260,6 @@ namespace eggsss
                 cather.Update(state);
             }
         }
-
-        private void AddExplosion(Vector2 position)
-        {
-            //throw new NotImplementedException();
-        }
-
 
         /// <summary>
         /// This is called when the game should draw itself.
