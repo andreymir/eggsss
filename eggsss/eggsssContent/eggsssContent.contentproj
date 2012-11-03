@@ -30,37 +30,38 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="The_Eggs_HD-catcher-lbottom.png">
-      <Name>The_Eggs_HD-catcher-lbottom</Name>
+    <Compile Include="Catcher\catcher-lbottom.png">
+      <Name>catcher-lbottom</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="The_Eggs_HD-catcher-left.png">
-      <Name>The_Eggs_HD-catcher-left</Name>
+    <Compile Include="Catcher\catcher-left.png">
+      <Name>catcher-left</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="The_Eggs_HD-catcher-ltop.png">
-      <Name>The_Eggs_HD-catcher-ltop</Name>
+    <Compile Include="Catcher\catcher-ltop.png">
+      <Name>catcher-ltop</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="The_Eggs_HD-catcher-rbottom.png">
-      <Name>The_Eggs_HD-catcher-rbottom</Name>
+    <Compile Include="Catcher\catcher-rbottom.png">
+      <Name>catcher-rbottom</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="The_Eggs_HD-catcher-right.png">
-      <Name>The_Eggs_HD-catcher-right</Name>
+    <Compile Include="Catcher\catcher-right.png">
+      <Name>catcher-right</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="The_Eggs_HD-catcher-rtop.png">
-      <Name>The_Eggs_HD-catcher-rtop</Name>
+    <Compile Include="Catcher\catcher-rtop.png">
+      <Name>catcher-rtop</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
