@@ -63,8 +63,8 @@ namespace eggsss
             Content.RootDirectory = "Content";
 
             newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 750));
-            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(238, 750));
-            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(238, 750));
+            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(346, 750));
+            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(346, 750));
             continueButton.Visible = false;
             exitButton = CreateButtonSprite(Resources.Exit, new Vector2(1072, 750));
         }

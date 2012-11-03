@@ -56,7 +56,7 @@ namespace eggsss
                 Width - bg_l.Width - bg_r.Width, bg_c.Height), Color.White);
             spriteBatch.Draw(bg_r, new Vector2(Position.X + this.Width - bg_r.Width, Position.Y), Color.White);
             spriteBatch.Draw(voiceTexture, new Vector2(Position.X + Width - bg_r.Width - voiceTexture.Width, Position.Y), Color.White);
-            spriteBatch.DrawString(Font, Text, Position + new Vector2(bg_l.Width, -5), Color.White);
+            spriteBatch.DrawString(Font, Text, Position + new Vector2(bg_l.Width, -4), Color.White);
 
             spriteBatch.End();
         }
