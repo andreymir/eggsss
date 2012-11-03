@@ -19,6 +19,7 @@ namespace eggsss
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Catcher cather;
+        private Health health;
         private Texture2D mainBackground;
         private bool isPause;
         private Random random;
@@ -62,6 +63,7 @@ namespace eggsss
         private void Start()
         {
             cather = new Catcher();
+            health = new Health();
             moveSounds = new SoundEffect[4];
             crushedEggTextures = new Texture2D[2];
             score = 0;
@@ -144,6 +146,8 @@ namespace eggsss
                 }
             };
 
+            health.Initialize(Content.Load<Texture2D>("penalty/penalty"), playerPosition);
+
             catchSound = Content.Load<SoundEffect>("sound/catchSound");
             crashSound = Content.Load<SoundEffect>("sound/crashSound");
             moveSounds[0] = Content.Load<SoundEffect>("sound/moveSound0");
@@ -219,7 +223,7 @@ namespace eggsss
                     {
                         AddCrushedEgg(gameTime, eggs[i].TrayNumber);
                         eggs.RemoveAt(i);
-                        cather.Health--;
+                        health.Update();
                         crashSound.Play();
                     }
                 }
@@ -242,7 +246,7 @@ namespace eggsss
 
         private void CheckGameOver()
         {
-            if (cather.Health == 0)
+            if (health.Value == 0)
             {
                 Debug.Print("Game over!");
 
@@ -291,7 +295,7 @@ namespace eggsss
         private void Restart()
         {
             score = 0;
-            cather.Health = 3;
+            health.Clear();
             eggs.Clear();
         }
 
@@ -380,6 +384,8 @@ namespace eggsss
                 crushedEgg.Draw(spriteBatch);
             }
 
+            health.Draw(spriteBatch);
+
             //Stop drawing
             spriteBatch.End();
 
@@ -398,8 +404,6 @@ namespace eggsss
         {
             // Draw the score
             spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
-            // Draw the player health
-            spriteBatch.DrawString(font, "health: " + cather.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
         }
 
         private void AddEgg(GameTime gameTime)

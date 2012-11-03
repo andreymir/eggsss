@@ -267,13 +267,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="penalty\penalty-1.png">
-      <Name>penalty-1</Name>
+    <Compile Include="penalty\penalty1.png">
+      <Name>penalty1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="penalty\penalty-2.png">
-      <Name>penalty-2</Name>
+    <Compile Include="penalty\penalty2.png">
+      <Name>penalty2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
