@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -13,6 +14,7 @@ namespace eggsss
         private TimeSpan pace;
         public int Value { get; set; }
         public bool Active { get; set; }
+        public CatcherState TrayNumber { get; set; }
 
         public int StepNumber
         {
@@ -22,11 +24,12 @@ namespace eggsss
 
         public bool Crushed;
 
-        public void Initialize(Rectangle window, Texture2D[] textures, CatcherState trayNumber, TimeSpan createTime, TimeSpan pace)
+        public void Initialize(Rectangle window, Texture2D[] textures, SoundEffect[] soundEffects, CatcherState trayNumber, TimeSpan createTime, TimeSpan pace)
         {
             this.textures = textures;
             lastStepTime = createTime;
             this.pace = pace;
+            TrayNumber = trayNumber;
 
             if (trayNumber == CatcherState.TopLeft || trayNumber == CatcherState.BottomLeft)
             {
