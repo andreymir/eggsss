@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,6 +6,8 @@ namespace eggsss
 {
     public class Catcher
     {
+        public int Health { get; set; }
+
         public CatcherState State { get; set; }
 
         // Animation representing the player
@@ -31,6 +30,8 @@ namespace eggsss
 
             // Set the player to be active
             Active = true;
+
+            Health = 3;
         }
 
 

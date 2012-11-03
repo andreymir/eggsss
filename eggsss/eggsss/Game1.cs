@@ -1,51 +1,39 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
 namespace eggsss
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Catcher cather;
+        Texture2D mainBackground;
+        private bool isPause;
+        Random random;
 
-        public Game1()
+        //Number that holds the player score
+        int score;
+        // The font used to display UI elements
+        SpriteFont font;
+
+        public Game1(Random random)
         {
+            this.random = random;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
-            //Initialize the player class
             cather = new Catcher();
-
+            score = 0;
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -66,7 +54,10 @@ namespace eggsss
             playerPosition,
             CatcherState.TopLeft);
 
-            // TODO: use this.Content to load your game content here
+            mainBackground = Content.Load<Texture2D>("mainbackground");
+
+            // Load the score font
+            font = Content.Load<SpriteFont>("gameFont");
         }
 
         /// <summary>
@@ -86,17 +77,19 @@ namespace eggsss
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (Keyboard.GetState().GetPressedKeys().FirstOrDefault() == Keys.Escape)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            // Read the current state of the keyboard and gamepad and store it
-            //currentKeyboardState = Keyboard.GetState();
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                isPause = true;
 
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+                isPause = false;
 
-            //Update the player
-            UpdateCatcher(gameTime);
-
-
+            if (!isPause)
+            {
+                UpdateCatcher(gameTime);
+            }
             base.Update(gameTime);
         }
 
@@ -126,38 +119,56 @@ namespace eggsss
             {
                 cather.Update(state);
             }
+        }
 
-            //// Get Thumbstick Controls
-            //player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
-            //player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * playerMoveSpeed;
+        private void AddEgg()
+        {
+            Vector2 position = random.Next(100, GraphicsDevice.Viewport.Height - 100));
 
-            //// Use the Keyboard / Dpad
-            //if (currentKeyboardState.IsKeyDown(Keys.Left) ||
-            //currentGamePadState.DPad.Left == ButtonState.Pressed)
-            //{
-            //    player.Position.X -= playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Right) ||
-            //currentGamePadState.DPad.Right == ButtonState.Pressed)
-            //{
-            //    player.Position.X += playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Up) ||
-            //currentGamePadState.DPad.Up == ButtonState.Pressed)
-            //{
-            //    player.Position.Y -= playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Down) ||
-            //currentGamePadState.DPad.Down == ButtonState.Pressed)
-            //{
-            //    player.Position.Y += playerMoveSpeed;
-            //}
+            // Create an enemy
+            Enemy enemy = new Enemy();
 
+            // Initialize the enemy
+            enemy.Initialize(enemyAnimation, position);
 
-            //// Make sure that the player does not go out of bounds
-            //player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
-            //player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
+            // Add the enemy to the active enemies list
+            enemies.Add(enemy);
+        }
 
+        private void UpdateEgg(GameTime gameTime)
+        {
+            // Spawn a new enemy enemy every 1.5 seconds
+            if (gameTime.TotalGameTime - previousSpawnTime > enemySpawnTime)
+            {
+                previousSpawnTime = gameTime.TotalGameTime;
+
+                // Add an Enemy
+                AddEnemy();
+            }
+
+            // Update the Enemies
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                enemies[i].Update(gameTime);
+
+                if (enemies[i].Active == false)
+                {
+                    // If not active and health <= 0
+                    if (enemies[i].Health <= 0)
+                    {
+                        // Add an explosion
+                        AddExplosion(enemies[i].Position);
+
+                        // Play the explosion sound
+                        explosionSound.Play();
+
+                        //Add to the player's score
+                        score += enemies[i].Value;
+                    }
+
+                    enemies.RemoveAt(i);
+                }
+            }
         }
 
         /// <summary>
@@ -171,8 +182,15 @@ namespace eggsss
             // Start drawing
             spriteBatch.Begin();
 
+            spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
+
             // Draw the Player
             cather.Draw(spriteBatch);
+            
+            // Draw the score
+            spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            // Draw the player health
+            spriteBatch.DrawString(font, "health: " + cather.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
 
             //Stop drawing
             spriteBatch.End();
