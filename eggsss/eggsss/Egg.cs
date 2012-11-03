@@ -11,7 +11,7 @@ namespace eggsss
         private Texture2D[] textures;
         public Vector2 Position { get; set; }
         private TimeSpan lastStepTime;
-        private TimeSpan pace;
+        public TimeSpan Pace;
         public int Value { get; set; }
         public bool Active { get; set; }
         public CatcherState TrayNumber { get; set; }
@@ -28,7 +28,7 @@ namespace eggsss
         {
             this.textures = textures;
             lastStepTime = createTime;
-            this.pace = pace;
+            this.Pace = pace;
             TrayNumber = trayNumber;
 
             if (trayNumber == CatcherState.TopLeft || trayNumber == CatcherState.BottomLeft)
@@ -62,7 +62,7 @@ namespace eggsss
 
         public void Update(GameTime gameTime)
         {
-            if (gameTime.TotalGameTime - lastStepTime > pace)
+            if (gameTime.TotalGameTime - lastStepTime > Pace)
             {
                 lastStepTime = gameTime.TotalGameTime;
                 StepNumber++;
