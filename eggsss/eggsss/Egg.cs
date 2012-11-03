@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -12,6 +9,8 @@ namespace eggsss
         private Rectangle Window;
         private Texture2D[] EggTextures;
         public Vector2 Position { get; set; }
+        public int Value { get; set; }
+        public bool Active { get; set; }
 
 
         public int StepNumber { get; set; }
@@ -30,7 +29,7 @@ namespace eggsss
 
         internal void Update(GameTime gameTime)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

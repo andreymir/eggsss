@@ -1,6 +1,8 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using KinectActionCapture;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -13,21 +15,22 @@ namespace eggsss
         private Catcher cather;
         Texture2D mainBackground;
         private bool isPause;
-        Random random;
         private Random random;
         private Texture2D[][] eggTextures;
         private List<Egg> eggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
+        SoundEffect explosionSound;
+        private KinectManager kinect;
+        private StartResult kinectStartState;
 
         //Number that holds the player score
         int score;
         // The font used to display UI elements
         SpriteFont font;
 
-        public Game1(Random random)
+        public Game1()
         {
-            this.random = random;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -38,6 +41,8 @@ namespace eggsss
             score = 0;
             random = new Random();
             eggs = new List<Egg>();
+            kinect = new KinectManager();
+            kinectStartState = kinect.StartKinect();
 
             // Initial egg spawn time
             eggSpawnTime = new TimeSpan(2 * TimeSpan.TicksPerSecond); // 2 seconds
@@ -73,37 +78,39 @@ namespace eggsss
             {
                 new []
                 {
-                    Content.Load<Texture2D>("0-0"),
-                    Content.Load<Texture2D>("0-1"),
-                    Content.Load<Texture2D>("0-2"),
-                    Content.Load<Texture2D>("0-3"),
-                    Content.Load<Texture2D>("0-4"),
+                    Content.Load<Texture2D>("Egg/0-0"),
+                    Content.Load<Texture2D>("Egg/0-1"),
+                    Content.Load<Texture2D>("Egg/0-2"),
+                    Content.Load<Texture2D>("Egg/0-3"),
+                    Content.Load<Texture2D>("Egg/0-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("1-0"),
-                    Content.Load<Texture2D>("1-1"),
-                    Content.Load<Texture2D>("1-2"),
-                    Content.Load<Texture2D>("1-3"),
-                    Content.Load<Texture2D>("1-4"),
+                    Content.Load<Texture2D>("Egg/1-0"),
+                    Content.Load<Texture2D>("Egg/1-1"),
+                    Content.Load<Texture2D>("Egg/1-2"),
+                    Content.Load<Texture2D>("Egg/1-3"),
+                    Content.Load<Texture2D>("Egg/1-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("2-0"),
-                    Content.Load<Texture2D>("2-1"),
-                    Content.Load<Texture2D>("2-2"),
-                    Content.Load<Texture2D>("2-3"),
-                    Content.Load<Texture2D>("2-4"),
+                    Content.Load<Texture2D>("Egg/2-0"),
+                    Content.Load<Texture2D>("Egg/2-1"),
+                    Content.Load<Texture2D>("Egg/2-2"),
+                    Content.Load<Texture2D>("Egg/2-3"),
+                    Content.Load<Texture2D>("Egg/2-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("3-0"),
-                    Content.Load<Texture2D>("3-1"),
-                    Content.Load<Texture2D>("3-2"),
-                    Content.Load<Texture2D>("3-3"),
-                    Content.Load<Texture2D>("3-4"),
+                    Content.Load<Texture2D>("Egg/3-0"),
+                    Content.Load<Texture2D>("Egg/3-1"),
+                    Content.Load<Texture2D>("Egg/3-2"),
+                    Content.Load<Texture2D>("Egg/3-3"),
+                    Content.Load<Texture2D>("Egg/3-4"),
                 },
             };
+
+            
         }
 
         /// <summary>
@@ -112,7 +119,7 @@ namespace eggsss
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            kinect.StopKinect();
         }
 
         /// <summary>
@@ -174,24 +181,48 @@ namespace eggsss
 
         private void UpdateCatcher(GameTime gameTime)
         {
-            var keyboardState = Keyboard.GetState();
             var state = CatcherState.Unknown;
+            if (kinectStartState == StartResult.KinectStarted)
+            {
+                var kinectState = kinect.GetCurrentGameState();
 
-            if (keyboardState.IsKeyDown(Keys.NumPad4))
-            {
-                state = CatcherState.TopLeft;
+                if (kinectState == GameState.SecondAreaSelected)
+                {
+                    state = CatcherState.TopLeft;
+                }
+                else if (kinectState == GameState.ThirdAreaSelected)
+                {
+                    state = CatcherState.TopRight;
+                }
+                else if (kinectState == GameState.FirstAreaSelected)
+                {
+                    state = CatcherState.BottomLeft;
+                }
+                else if (kinectState == GameState.FourthAreaSelected)
+                {
+                    state = CatcherState.BottomRight;
+                }
             }
-            else if (keyboardState.IsKeyDown(Keys.NumPad5))
+            else
             {
-                state = CatcherState.TopRight;
-            }
-            else if (keyboardState.IsKeyDown(Keys.NumPad1))
-            {
-                state = CatcherState.BottomLeft;
-            }
-            else if (keyboardState.IsKeyDown(Keys.NumPad2))
-            {
-                state = CatcherState.BottomRight;
+                var keyboardState = Keyboard.GetState();
+
+                if (keyboardState.IsKeyDown(Keys.NumPad4))
+                {
+                    state = CatcherState.TopLeft;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad5))
+                {
+                    state = CatcherState.TopRight;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad1))
+                {
+                    state = CatcherState.BottomLeft;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad2))
+                {
+                    state = CatcherState.BottomRight;
+                }
             }
 
             if (state != CatcherState.Unknown)
@@ -200,55 +231,43 @@ namespace eggsss
             }
         }
 
-        private void AddEgg()
-        {
-            Vector2 position = random.Next(100, GraphicsDevice.Viewport.Height - 100));
-
-            // Create an enemy
-            Enemy enemy = new Enemy();
-
-            // Initialize the enemy
-            enemy.Initialize(enemyAnimation, position);
-
-            // Add the enemy to the active enemies list
-            enemies.Add(enemy);
-        }
-
         private void UpdateEgg(GameTime gameTime)
         {
             // Spawn a new enemy enemy every 1.5 seconds
-            if (gameTime.TotalGameTime - previousSpawnTime > enemySpawnTime)
-            {
-                previousSpawnTime = gameTime.TotalGameTime;
+            //if (gameTime.TotalGameTime - previousSpawnTime > new TimeSpan(0,0,1))
+            //{
+            //    //previousSpawnTime = gameTime.TotalGameTime;
 
-                // Add an Enemy
-                AddEnemy();
-            }
+            //    // Add an Enemy
+            //    AddEgg();
+            //}
 
             // Update the Enemies
-            for (int i = enemies.Count - 1; i >= 0; i--)
+            for (int i = eggs.Count - 1; i >= 0; i--)
             {
-                enemies[i].Update(gameTime);
+                eggs[i].Update(gameTime);
 
-                if (enemies[i].Active == false)
+                if (eggs[i].Active == false)
                 {
-                    // If not active and health <= 0
-                    if (enemies[i].Health <= 0)
-                    {
-                        // Add an explosion
-                        AddExplosion(enemies[i].Position);
+                    // Add an explosion
+                    AddExplosion(eggs[i].Position);
 
-                        // Play the explosion sound
-                        explosionSound.Play();
+                    // Play the explosion sound
+                    explosionSound.Play();
 
-                        //Add to the player's score
-                        score += enemies[i].Value;
-                    }
+                    //Add to the player's score
+                    score += eggs[i].Value;
 
-                    enemies.RemoveAt(i);
+                    eggs.RemoveAt(i);
                 }
             }
         }
+
+        private void AddExplosion(Vector2 position)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// This is called when the game should draw itself.
