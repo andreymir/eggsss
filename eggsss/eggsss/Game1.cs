@@ -45,7 +45,7 @@ namespace eggsss
             eggs = new List<Egg>();
 
             // Initial egg spawn time
-            eggSpawnTime = new TimeSpan(2 * TimeSpan.TicksPerSecond); // 2 seconds
+            eggSpawnTime = new TimeSpan(5 * TimeSpan.TicksPerSecond); // 2 seconds
 
             base.Initialize();
         }
@@ -78,35 +78,35 @@ namespace eggsss
             {
                 new []
                 {
-                    Content.Load<Texture2D>("0-0"),
-                    Content.Load<Texture2D>("0-1"),
-                    Content.Load<Texture2D>("0-2"),
-                    Content.Load<Texture2D>("0-3"),
-                    Content.Load<Texture2D>("0-4"),
+                    Content.Load<Texture2D>("Egg/0-0"),
+                    Content.Load<Texture2D>("Egg/0-1"),
+                    Content.Load<Texture2D>("Egg/0-2"),
+                    Content.Load<Texture2D>("Egg/0-3"),
+                    Content.Load<Texture2D>("Egg/0-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("1-0"),
-                    Content.Load<Texture2D>("1-1"),
-                    Content.Load<Texture2D>("1-2"),
-                    Content.Load<Texture2D>("1-3"),
-                    Content.Load<Texture2D>("1-4"),
+                    Content.Load<Texture2D>("Egg/1-0"),
+                    Content.Load<Texture2D>("Egg/1-1"),
+                    Content.Load<Texture2D>("Egg/1-2"),
+                    Content.Load<Texture2D>("Egg/1-3"),
+                    Content.Load<Texture2D>("Egg/1-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("2-0"),
-                    Content.Load<Texture2D>("2-1"),
-                    Content.Load<Texture2D>("2-2"),
-                    Content.Load<Texture2D>("2-3"),
-                    Content.Load<Texture2D>("2-4"),
+                    Content.Load<Texture2D>("Egg/2-0"),
+                    Content.Load<Texture2D>("Egg/2-1"),
+                    Content.Load<Texture2D>("Egg/2-2"),
+                    Content.Load<Texture2D>("Egg/2-3"),
+                    Content.Load<Texture2D>("Egg/2-4"),
                 },
                 new []
                 {
-                    Content.Load<Texture2D>("3-0"),
-                    Content.Load<Texture2D>("3-1"),
-                    Content.Load<Texture2D>("3-2"),
-                    Content.Load<Texture2D>("3-3"),
-                    Content.Load<Texture2D>("3-4"),
+                    Content.Load<Texture2D>("Egg/3-0"),
+                    Content.Load<Texture2D>("Egg/3-1"),
+                    Content.Load<Texture2D>("Egg/3-2"),
+                    Content.Load<Texture2D>("Egg/3-3"),
+                    Content.Load<Texture2D>("Egg/3-4"),
                 },
             };
         }
@@ -144,8 +144,8 @@ namespace eggsss
         {
             if (gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
             {
-                AddEgg();
-                previousEggTime = eggSpawnTime;
+                AddEgg(gameTime);
+                previousEggTime = gameTime.TotalGameTime;
             }
 
             for (int i = eggs.Count - 1; i >= 0; i--)
@@ -209,17 +209,24 @@ namespace eggsss
             // Draw the Player
             cather.Draw(spriteBatch);
 
+            foreach (var egg in eggs)
+            {
+                egg.Draw(spriteBatch);
+            }
+
             //Stop drawing
             spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
-        private void AddEgg()
+        private void AddEgg(GameTime gameTime)
         {
             var egg = new Egg();
             var textureSet = eggTextures[random.Next(3)];
-            egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea, textureSet, random.Next(3));
+            var eggPace = TimeSpan.FromMilliseconds(1000);
+            egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea, 
+                textureSet, (CatcherState)random.Next(1, 4), gameTime.TotalGameTime, eggPace);
             eggs.Add(egg);
         }
     }
