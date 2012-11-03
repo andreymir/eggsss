@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Continue" xml:space="preserve">
-    <value>Продолжить</value>
+    <value>Continue</value>
   </data>
   <data name="Exit" xml:space="preserve">
-    <value>Выход</value>
+    <value>Exit</value>
   </data>
   <data name="NewGame" xml:space="preserve">
     <value>New</value>
   </data>
   <data name="Pause" xml:space="preserve">
-    <value>Пауза</value>
+    <value>Pause</value>
   </data>
 </root>

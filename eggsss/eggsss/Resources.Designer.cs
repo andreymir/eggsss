@@ -61,7 +61,7 @@ namespace eggsss {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Продолжить.
+        ///   Looks up a localized string similar to Continue.
         /// </summary>
         internal static string Continue {
             get {
@@ -70,7 +70,7 @@ namespace eggsss {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Выход.
+        ///   Looks up a localized string similar to Exit.
         /// </summary>
         internal static string Exit {
             get {
@@ -88,7 +88,7 @@ namespace eggsss {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Пауза.
+        ///   Looks up a localized string similar to Pause.
         /// </summary>
         internal static string Pause {
             get {

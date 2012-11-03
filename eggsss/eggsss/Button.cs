@@ -10,6 +10,10 @@ namespace eggsss
     public class Button : DrawableGameComponent
     {
         private SpriteBatch spriteBatch;
+        private Texture2D voiceTexture;
+        private Texture2D bg_l;
+        private Texture2D bg_c;
+        private Texture2D bg_r;
 
         public Button(Game game, string text, Vector2 position)
             : base(game)
@@ -23,12 +27,11 @@ namespace eggsss
             base.Initialize();
 
             var size = Font.MeasureString(Text);
-            Width = (int)Math.Ceiling(size.X) + 20;
-            Height = Texture.Height;
+            Width = (int)Math.Ceiling(size.X) + bg_l.Width + bg_r.Width + voiceTexture.Width;
+            Height = bg_c.Height;
         }
 
         public string Text { get; set; }
-        public Texture2D Texture { get; set; }
         public int Width { get; private set; }
         public int Height { get; private set; }
         public SpriteFont Font { get; set; }
@@ -37,16 +40,23 @@ namespace eggsss
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
-            this.Texture = this.Game.Content.Load<Texture2D>("button");
-            Font = this.Game.Content.Load<SpriteFont>("gameFont");
+            bg_l = this.Game.Content.Load<Texture2D>("Button/button-l");
+            bg_c = this.Game.Content.Load<Texture2D>("Button/button-c");
+            bg_r = this.Game.Content.Load<Texture2D>("Button/button-r");
+            voiceTexture = this.Game.Content.Load<Texture2D>("Button/voice");
+            Font = this.Game.Content.Load<SpriteFont>("Button/buttonFont");
         }
 
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
 
-            spriteBatch.Draw(Texture, new Rectangle((int)Position.X, (int)Position.Y, this.Width, this.Height), Color.White);
-            spriteBatch.DrawString(Font, Text, Position + new Vector2(10, 5), Color.White);
+            spriteBatch.Draw(bg_l, Position, Color.White);
+            spriteBatch.Draw(bg_c, new Rectangle((int)Position.X + bg_r.Width, (int)Position.Y, 
+                Width - bg_l.Width - bg_r.Width, bg_c.Height), Color.White);
+            spriteBatch.Draw(bg_r, new Vector2(Position.X + this.Width - bg_r.Width, Position.Y), Color.White);
+            spriteBatch.Draw(voiceTexture, new Vector2(Position.X + Width - bg_r.Width - voiceTexture.Width, Position.Y), Color.White);
+            spriteBatch.DrawString(Font, Text, Position + new Vector2(bg_l.Width, -5), Color.White);
 
             spriteBatch.End();
         }

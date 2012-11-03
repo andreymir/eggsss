@@ -20,7 +20,6 @@ namespace eggsss
         private SpriteBatch spriteBatch;
         private Catcher cather;
         private Texture2D mainBackground;
-        private bool paused;
         private Random random;
 
         private Texture2D[][] eggTextures;
@@ -48,6 +47,9 @@ namespace eggsss
         private Button continueButton;
         private Button exitButton;
 
+        // Pause
+        private bool paused;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -59,9 +61,10 @@ namespace eggsss
             Content.RootDirectory = "Content";
 
             newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 750));
-            //pauseButton = CreateButtonSprite(Resources.Pause);
-            //continueButton = CreateButtonSprite(Resources.Continue);
-            //exitButton = CreateButtonSprite(Resources.Exit);
+            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(238, 750));
+            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(238, 750));
+            continueButton.Visible = false;
+            exitButton = CreateButtonSprite(Resources.Exit, new Vector2(1072, 750));
         }
 
         protected override void Initialize()
@@ -198,7 +201,14 @@ namespace eggsss
 
             if (paused)
             {
+                pauseButton.Visible = false;
+                continueButton.Visible = true;
                 return;
+            }
+            else
+            {
+                pauseButton.Visible = true;
+                continueButton.Visible = false;
             }
 
             UpdateCatcher(gameTime);
@@ -389,7 +399,6 @@ namespace eggsss
             cather.Draw(spriteBatch);
             DrawText();
             DrawEggs();
-            DrawButtons();
 
             // Draw the explosions
             foreach (var crushedEgg in crushedEggs)
@@ -401,11 +410,6 @@ namespace eggsss
             spriteBatch.End();
 
             base.Draw(gameTime);
-        }
-
-        private void DrawButtons()
-        {
-            //spriteBatch.Draw
         }
 
         private void DrawEggs()

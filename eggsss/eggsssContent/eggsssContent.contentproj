@@ -284,8 +284,32 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="button.png">
-      <Name>button</Name>
+    <Compile Include="Button\buttonFont.spritefont">
+      <Name>buttonFont</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Button\voice.png">
+      <Name>voice</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Button\button-c.png">
+      <Name>button-c</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Button\button-l.png">
+      <Name>button-l</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="Button\button-r.png">
+      <Name>button-r</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
