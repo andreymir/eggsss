@@ -369,10 +369,10 @@ namespace eggsss
                         Exit();
                         break;
                     case VoiceCommand.Pause:
-                        isPause = true;
+                        paused = true;
                         break;
                     case VoiceCommand.Continue:
-                        isPause = false;
+                        paused = false;
                         break;
                 }
             }
