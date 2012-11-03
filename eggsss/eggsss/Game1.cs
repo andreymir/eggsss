@@ -206,6 +206,29 @@ namespace eggsss
                 paused = false;
             }
 
+            if (kinectStartState == StartResult.ManyKinectsDetected || kinectStartState == StartResult.KinectError)
+                paused = true;
+
+            if (kinectStartState == StartResult.KinectStarted)
+            {
+                var kinectCurrentVoice = kinect.GetCurrentVoiceCommand();
+                switch (kinectCurrentVoice)
+                {
+                    case VoiceCommand.NewGame:
+                        Restart();
+                        break;
+                    case VoiceCommand.Exit:
+                        Exit();
+                        break;
+                    case VoiceCommand.Pause:
+                        paused = true;
+                        break;
+                    case VoiceCommand.Continue:
+                        paused = false;
+                        break;
+                }
+            }
+
             if (paused)
             {
                 pauseButton.Visible = false;
@@ -358,23 +381,6 @@ namespace eggsss
                         break;
                     case GameState.FourthAreaSelected:
                         state = CatcherState.BottomRight;
-                        break;
-                }
-
-                var kinectCurrentVoice = kinect.GetCurrentVoiceCommand();
-                switch (kinectCurrentVoice)
-                {
-                    case VoiceCommand.NewGame:
-                        Restart();
-                        break;
-                    case VoiceCommand.Exit:
-                        Exit();
-                        break;
-                    case VoiceCommand.Pause:
-                        paused = true;
-                        break;
-                    case VoiceCommand.Continue:
-                        paused = false;
                         break;
                 }
             }
