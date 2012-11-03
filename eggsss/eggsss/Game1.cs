@@ -6,11 +6,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace eggsss
 {
     public class Game1 : Game
     {
+        private const int MIN_EGG_SPAWN_TIME = 1000;
+        private const int MAX_EGG_PACE = 400;
+
         private SoundEffect[] moveSounds;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -18,11 +22,15 @@ namespace eggsss
         private Texture2D mainBackground;
         private bool isPause;
         private Random random;
+
         private Texture2D[][] eggTextures;
         private Texture2D[] crushedEggTextures;
         private List<Egg> eggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
+        private TimeSpan eggPace;
+
+        private SoundEffect explosionSound;
         private SoundEffect catchSound;
         private SoundEffect crashSound;
         private SoundEffect gameOverSound;
@@ -30,6 +38,7 @@ namespace eggsss
         private StartResult kinectStartState;
 
         int score;
+        int prevScore;
         SpriteFont font;
 
         public Game1()
@@ -58,7 +67,15 @@ namespace eggsss
             random = new Random();
             eggs = new List<Egg>();
             kinect = new KinectManager();
-            eggSpawnTime = new TimeSpan(5*TimeSpan.TicksPerSecond); // 2 seconds
+            kinectStartState = kinect.StartKinect();
+
+            // Initial egg spawn time
+            eggSpawnTime = TimeSpan.FromSeconds(4);
+            previousEggTime = TimeSpan.FromSeconds(-3);
+            // Initial egg pace
+            eggPace = TimeSpan.FromSeconds(1);
+
+            base.Initialize();
         }
 
         protected override void LoadContent()
@@ -159,31 +176,37 @@ namespace eggsss
             if (Keyboard.GetState().IsKeyDown(Keys.P))
                 isPause = false;
 
-            if (!isPause)
+            if (isPause)
             {
-                UpdateCatcher(gameTime);
-                UpdateEggs(gameTime);
+                return;
             }
+
+            UpdateCatcher(gameTime);
+            UpdateEggs(gameTime);
+
             base.Update(gameTime);
         }
 
         private void UpdateEggs(GameTime gameTime)
         {
+            // Add new egg
             if (gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
             {
                 AddEgg(gameTime);
                 previousEggTime = gameTime.TotalGameTime;
             }
 
+            // Check eggs
             for (int i = eggs.Count - 1; i >= 0; i--)
             {
                 var egg = eggs[i];
 
-                if (egg.StepNumber == 4 && egg.TrayNumber == cather.State) // Ловим
+                if (egg.StepNumber == 4 && egg.TrayNumber == cather.State) // ?????
                 {
                     eggs.RemoveAt(i);
                     catchSound.Play();
                     score++;
+                    UpdateSpeed();
                 }
                 else
                 {
@@ -205,6 +228,56 @@ namespace eggsss
                     }
                 }
             }
+
+            CheckGameOver();
+        }
+
+        private void CheckGameOver()
+        {
+            if (cather.Health == 0)
+            {
+                Debug.Print("Game over!");
+
+                gameOverSound.Play();
+                Restart();
+            }
+        }
+
+        private void UpdateSpeed()
+        {
+            var t = TimeSpan.FromMilliseconds(MIN_EGG_SPAWN_TIME);
+            if (score % 5f == 0 && eggSpawnTime > t)
+            {
+                eggSpawnTime = eggSpawnTime.Subtract(TimeSpan.FromMilliseconds(1000));
+
+                if (eggSpawnTime < t)
+                {
+                    eggSpawnTime = t;
+                }
+            }
+
+            t = TimeSpan.FromMilliseconds(MAX_EGG_PACE);
+            if (score % 5f == 0 && eggPace > t)
+            {
+                eggPace = eggPace.Subtract(TimeSpan.FromMilliseconds(100));
+                if (eggPace < t)
+                {
+                    eggPace = t;
+                }
+
+                foreach (var egg in eggs)
+                {
+                    if (egg.StepNumber < 4)
+                    {
+                        egg.Pace = eggPace;
+                    }
+                }
+            }
+
+            //eggSpawnTime = TimeSpan.FromMilliseconds(900);
+            //eggPace = TimeSpan.FromMilliseconds(300);
+
+            Debug.Print("Level up! Spawn time: {0}; Egg pace: {1}", eggSpawnTime, eggPace);
         }
 
         private void Restart()
@@ -318,8 +391,9 @@ namespace eggsss
             var egg = new Egg();
             var textureSet = eggTextures[random.Next(3)];
             var eggPace = TimeSpan.FromMilliseconds(1000);
+            var trayNumber = (CatcherState)random.Next(1, 4);
             egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea,
-                textureSet, moveSounds, (CatcherState)random.Next(1, 4), gameTime.TotalGameTime, eggPace);
+                textureSet, moveSounds, trayNumber, gameTime.TotalGameTime, eggPace);
             eggs.Add(egg);
         }
     }
