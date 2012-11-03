@@ -13,14 +13,17 @@ namespace eggsss
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Catcher cather;
-        Texture2D mainBackground;
+        private Texture2D mainBackground;
         private bool isPause;
         private Random random;
+        
         private Texture2D[][] eggTextures;
         private List<Egg> eggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
-        SoundEffect explosionSound;
+        private TimeSpan eggPace;
+
+        private SoundEffect explosionSound;
         private KinectManager kinect;
         private StartResult kinectStartState;
 
@@ -45,7 +48,10 @@ namespace eggsss
             kinectStartState = kinect.StartKinect();
 
             // Initial egg spawn time
-            eggSpawnTime = new TimeSpan(5 * TimeSpan.TicksPerSecond); // 2 seconds
+            eggSpawnTime = TimeSpan.FromSeconds(5); // 5 seconds
+            previousEggTime = TimeSpan.FromSeconds(3);
+            // Initial egg pace
+            eggPace = TimeSpan.FromSeconds(1);
 
             base.Initialize();
         }
