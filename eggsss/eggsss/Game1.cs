@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using KinectActionCapture;
 using KinectActionCapture.Game;
+using KinectActionCapture.VoiceManipulation;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -327,6 +328,23 @@ namespace eggsss
                         break;
                     case GameState.FourthAreaSelected:
                         state = CatcherState.BottomRight;
+                        break;
+                }
+
+                var kinectCurrentVoice = kinect.GetCurrentVoiceCommand();
+                switch (kinectCurrentVoice)
+                {
+                    case VoiceCommand.NewGame:
+                        Restart();
+                        break;
+                    case VoiceCommand.Exit:
+                        Exit();
+                        break;
+                    case VoiceCommand.Pause:
+                        isPause = true;
+                        break;
+                    case VoiceCommand.Continue:
+                        isPause = false;
                         break;
                 }
             }
