@@ -44,36 +44,35 @@ namespace eggsss
         {
             Texture2D bodyTexture = null;
             Texture2D basketTexture = null;
-            Vector2 bodyPosition = new Vector2();
-            Vector2 basketPosition = new Vector2();
+            var bodyPosition = new Vector2();
+            var basketPosition = new Vector2();
 
             switch (State)
             {
                 case CatcherState.TopLeft:
                     bodyTexture = PlayerTexture[0];
                     basketTexture = PlayerTexture[2];
-                    bodyPosition = Position + new Vector2(-bodyTexture.Width, -bodyTexture.Height);
-                    basketPosition = Position + new Vector2(-bodyTexture.Width - basketTexture.Width, -bodyTexture.Height);
+                    bodyPosition = Position + new Vector2(-bodyTexture.Width + 10, -bodyTexture.Height - 100);
+                    basketPosition = Position + new Vector2(-bodyTexture.Width - basketTexture.Width + 50, -bodyTexture.Height - 120);
                     break;
                 case CatcherState.BottomLeft:
                     bodyTexture = PlayerTexture[0];
                     basketTexture = PlayerTexture[3];
-                    bodyPosition = Position + new Vector2(-bodyTexture.Width, -bodyTexture.Height);
-                    basketPosition = Position + new Vector2(-bodyTexture.Width - basketTexture.Width, -bodyTexture.Height + basketTexture.Height);
+                    bodyPosition = Position + new Vector2(-bodyTexture.Width + 10, -bodyTexture.Height - 100);
+                    basketPosition = Position + new Vector2(-bodyTexture.Width - basketTexture.Width + 40, -bodyTexture.Height + basketTexture.Height - 50);
                     break;
                 case CatcherState.TopRight:
                     bodyTexture = PlayerTexture[1];
                     basketTexture = PlayerTexture[4];
-                    bodyPosition = Position + new Vector2(0, -bodyTexture.Height);
-                    basketPosition = Position + new Vector2(basketTexture.Width * 0.25f + basketTexture.Width, -bodyTexture.Height);
+                    bodyPosition = Position + new Vector2(0, -bodyTexture.Height - 100);
+                    basketPosition = Position + new Vector2(basketTexture.Width + basketTexture.Width - 200 , -bodyTexture.Height - 120);
                     break;
                 case CatcherState.BottomRight:
                     bodyTexture = PlayerTexture[1];
                     basketTexture = PlayerTexture[5];
-                    bodyPosition = Position + new Vector2(0, -bodyTexture.Height);
-                    basketPosition = Position + new Vector2(basketTexture.Width * 0.95f, -bodyTexture.Height + basketTexture.Height * 1.1f);
+                    bodyPosition = Position + new Vector2(0, -bodyTexture.Height - 100);
+                    basketPosition = Position + new Vector2(basketTexture.Width + basketTexture.Width - 140, -bodyTexture.Height + basketTexture.Height - 50);
                     break;
-
             }
 
             if (bodyTexture == null || basketTexture == null)
