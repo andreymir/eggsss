@@ -41,7 +41,6 @@ namespace eggsss
         private StartResult kinectStartState;
 
         int score;
-        int prevScore;
         SpriteFont font;
         private Vector2 playerPosition;
 
