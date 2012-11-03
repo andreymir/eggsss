@@ -20,7 +20,7 @@ namespace eggsss
         private SpriteBatch spriteBatch;
         private Catcher cather;
         private Texture2D mainBackground;
-        private bool isPause;
+        private bool paused;
         private Random random;
 
         private Texture2D[][] eggTextures;
@@ -168,15 +168,21 @@ namespace eggsss
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                isPause = true;
+            {
+                paused = true;
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
-                isPause = false;
+            {
+                paused = false;
+            }
 
-            if (isPause)
+            if (paused)
             {
                 return;
             }
