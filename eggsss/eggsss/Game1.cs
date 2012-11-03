@@ -15,6 +15,7 @@ namespace eggsss
     {
         private const int MIN_EGG_SPAWN_TIME = 1000;
         private const int MAX_EGG_PACE = 400;
+        private const int MAX_EGG_COUNT = 8;
 
         private SoundEffect[] moveSounds;
         private GraphicsDeviceManager graphics;
@@ -27,10 +28,11 @@ namespace eggsss
         private Texture2D[][] eggTextures;
         private Texture2D[] crushedEggTextures;
         private List<Egg> eggs;
-        private List<CrushedEgg> crushedEggs; 
+        private List<CrushedEgg> crushedEggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
         private TimeSpan eggPace;
+        private CatcherState prevTrayNumber = CatcherState.Unknown;
 
         private SoundEffect catchSound;
         private SoundEffect crashSound;
@@ -226,7 +228,7 @@ namespace eggsss
         private void UpdateEggs(GameTime gameTime)
         {
             // Add new egg
-            if (gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
+            if (eggs.Count <= 8 & gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
             {
                 AddEgg(gameTime);
                 previousEggTime = gameTime.TotalGameTime;
@@ -455,10 +457,17 @@ namespace eggsss
             var egg = new Egg();
             var textureSet = eggTextures[random.Next(3)];
             var eggPace = TimeSpan.FromMilliseconds(1000);
-            var trayNumber = (CatcherState)random.Next(1, 4);
+            CatcherState trayNumber;
+            do
+            {
+                trayNumber = (CatcherState)random.Next(1, 4);
+            }
+            while (trayNumber == prevTrayNumber);
+
             egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea,
                 textureSet, moveSounds, trayNumber, gameTime.TotalGameTime, eggPace);
             eggs.Add(egg);
+            prevTrayNumber = trayNumber;
         }
     }
 }
