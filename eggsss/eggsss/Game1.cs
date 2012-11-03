@@ -26,11 +26,11 @@ namespace eggsss
         private Texture2D[][] eggTextures;
         private Texture2D[] crushedEggTextures;
         private List<Egg> eggs;
+        private List<CrushedEgg> crushedEggs; 
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
         private TimeSpan eggPace;
 
-        private SoundEffect explosionSound;
         private SoundEffect catchSound;
         private SoundEffect crashSound;
         private SoundEffect gameOverSound;
@@ -40,6 +40,7 @@ namespace eggsss
         int score;
         int prevScore;
         SpriteFont font;
+        private Vector2 playerPosition;
 
         // Buttons
         private Button newGameButton;
@@ -71,6 +72,7 @@ namespace eggsss
             score = 0;
             random = new Random();
             eggs = new List<Egg>();
+            crushedEggs = new List<CrushedEgg>(5);
             kinect = new KinectManager();
             kinectStartState = kinect.StartKinect();
 
@@ -96,7 +98,7 @@ namespace eggsss
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            var playerPosition =
+            playerPosition =
                 new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height);
 
             cather.Initialize(
@@ -201,6 +203,7 @@ namespace eggsss
 
             UpdateCatcher(gameTime);
             UpdateEggs(gameTime);
+            UpdateCrushedEggs(gameTime);
 
             base.Update(gameTime);
         }
@@ -232,22 +235,27 @@ namespace eggsss
 
                     if (egg.Crushed)
                     {
+                        AddCrushedEgg(gameTime, eggs[i].TrayNumber);
                         eggs.RemoveAt(i);
                         cather.Health--;
                         crashSound.Play();
-
-                        AddCrushedEgg(gameTime, eggs[i].TrayNumber);
-                        
-                        if (cather.Health == 0)
-                        {
-                            gameOverSound.Play();
-                            Restart();
-                        }
                     }
                 }
             }
 
             CheckGameOver();
+        }
+
+        private void UpdateCrushedEggs(GameTime gameTime)
+        {
+            for (int i = crushedEggs.Count - 1; i >= 0; i--)
+            {
+                crushedEggs[i].Update(gameTime);
+                if (crushedEggs[i].Active == false)
+                {
+                    crushedEggs.RemoveAt(i);
+                }
+            }
         }
 
         private void CheckGameOver()
@@ -302,12 +310,14 @@ namespace eggsss
         {
             score = 0;
             cather.Health = 3;
+            eggs.Clear();
         }
 
         private void AddCrushedEgg(GameTime gameTime, CatcherState position)
         {
             var crushedEgg = new CrushedEgg();
-            crushedEgg.Initialize(crushedEggTextures, cather.Position, position, gameTime.TotalGameTime);
+            crushedEgg.Initialize(crushedEggTextures, playerPosition, position, gameTime.TotalGameTime);
+            crushedEggs.Add(crushedEgg);
         }
 
 
@@ -373,13 +383,19 @@ namespace eggsss
             // Start drawing
             spriteBatch.Begin();
 
-            spriteBatch.Draw(mainBackground, Vector2.Zero, GraphicsDevice.Viewport.TitleSafeArea, Color.White, 0f, Vector2.Zero, 2.7f, SpriteEffects.None, 0);
+            spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
 
             // Draw the Player
             cather.Draw(spriteBatch);
             DrawText();
             DrawEggs();
             DrawButtons();
+
+            // Draw the explosions
+            foreach (var crushedEgg in crushedEggs)
+            {
+                crushedEgg.Draw(spriteBatch);
+            }
 
             //Stop drawing
             spriteBatch.End();
@@ -403,9 +419,9 @@ namespace eggsss
         private void DrawText()
         {
             // Draw the score
-            spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
             // Draw the player health
-            spriteBatch.DrawString(font, "health: " + cather.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
+            spriteBatch.DrawString(font, "health: " + cather.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
         }
 
         private void AddEgg(GameTime gameTime)

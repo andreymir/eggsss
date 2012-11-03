@@ -66,21 +66,19 @@ namespace eggsss
                     case CatcherState.TopLeft:
                     case CatcherState.BottomLeft:
                         texture = Texture[0];
-                        position = Position + new Vector2(texture.Width, -texture.Height);
+                        position = Position + new Vector2(- texture.Width - 250, - texture.Height - 60);
                         break;
                     case CatcherState.TopRight:
                     case CatcherState.BottomRight:
                         texture = Texture[1];
-                        position = Position + new Vector2(-texture.Width, -texture.Height);
+                        position = Position + new Vector2(texture.Width + 180, - texture.Height - 60);
                         break;
                 }
 
-                if (texture == null)
+                if (texture != null)
                 {
-                    throw new InvalidOperationException();
+                    spriteBatch.Draw(texture, position, Color.White);
                 }
-
-                spriteBatch.Draw(texture, position, Color.White);
             }
         }
     }

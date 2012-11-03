@@ -15,6 +15,7 @@ namespace eggsss
         public int Value { get; set; }
         public bool Active { get; set; }
         public CatcherState TrayNumber { get; set; }
+        private SoundEffect[] soundEffects;
 
         public int StepNumber
         {
@@ -28,31 +29,35 @@ namespace eggsss
         {
             this.textures = textures;
             lastStepTime = createTime;
-            this.Pace = pace;
+            this.soundEffects = soundEffects;
+            Pace = pace;
             TrayNumber = trayNumber;
 
-            if (trayNumber == CatcherState.TopLeft || trayNumber == CatcherState.BottomLeft)
+            switch (trayNumber)
             {
-                stepDelta = new Vector2(10, 10);
-            }
-            else if (trayNumber == CatcherState.TopRight || trayNumber == CatcherState.BottomRight)
-            {
-                stepDelta = new Vector2(-10, 10);
+                case CatcherState.BottomLeft:
+                case CatcherState.TopLeft:
+                    stepDelta = new Vector2(30, 20);
+                    break;
+                case CatcherState.BottomRight:
+                case CatcherState.TopRight:
+                    stepDelta = new Vector2(-30, 20);
+                    break;
             }
 
             switch (trayNumber)
             {
                 case CatcherState.TopLeft:
-                    Position = new Vector2(100, 100);
+                    Position = new Vector2(150, 300);
                     break;
                 case CatcherState.TopRight:
-                    Position = new Vector2(400, 100);
+                    Position = new Vector2(1100, 300);
                     break;
                 case CatcherState.BottomRight:
-                    Position = new Vector2(400, 400);
+                    Position = new Vector2(1100, 500);
                     break;
                 case CatcherState.BottomLeft:
-                    Position = new Vector2(100, 400);
+                    Position = new Vector2(150, 500);
                     break;
             }
 
@@ -65,6 +70,7 @@ namespace eggsss
             if (gameTime.TotalGameTime - lastStepTime > Pace)
             {
                 lastStepTime = gameTime.TotalGameTime;
+                soundEffects[(int) TrayNumber - 1].Play();
                 StepNumber++;
                 Position += stepDelta;
 
@@ -77,11 +83,9 @@ namespace eggsss
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (!Crushed)
-            {
-                var texture = textures[StepNumber];
-                spriteBatch.Draw(texture, Position, Color.White);
-            }
+            if (Crushed) return;
+            var texture = textures[StepNumber];
+            spriteBatch.Draw(texture, Position, Color.White);
         }
     }
 }
