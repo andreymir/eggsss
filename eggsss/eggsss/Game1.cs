@@ -1,29 +1,33 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using KinectActionCapture;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
 namespace eggsss
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game1 : Game
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Catcher cather;
+        Texture2D mainBackground;
+        private bool isPause;
         private Random random;
         private Texture2D[][] eggTextures;
         private List<Egg> eggs;
         private TimeSpan eggSpawnTime;
         private TimeSpan previousEggTime;
+        SoundEffect explosionSound;
+        private KinectManager kinect;
+        private StartResult kinectStartState;
+
+        //Number that holds the player score
+        int score;
+        // The font used to display UI elements
+        SpriteFont font;
 
         public Game1()
         {
@@ -31,18 +35,14 @@ namespace eggsss
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            //Initialize the player class
             cather = new Catcher();
+            score = 0;
             random = new Random();
             eggs = new List<Egg>();
+            kinect = new KinectManager();
+            kinectStartState = kinect.StartKinect();
 
             // Initial egg spawn time
             eggSpawnTime = new TimeSpan(5 * TimeSpan.TicksPerSecond); // 2 seconds
@@ -50,10 +50,6 @@ namespace eggsss
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -74,6 +70,10 @@ namespace eggsss
             playerPosition,
             CatcherState.TopLeft);
 
+            mainBackground = Content.Load<Texture2D>("mainbackground");
+
+            // Load the score font
+            font = Content.Load<SpriteFont>("gameFont");
             eggTextures = new[]
             {
                 new []
@@ -109,6 +109,8 @@ namespace eggsss
                     Content.Load<Texture2D>("Egg/3-4"),
                 },
             };
+
+
         }
 
         /// <summary>
@@ -117,7 +119,7 @@ namespace eggsss
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            kinect.StopKinect();
         }
 
         /// <summary>
@@ -128,15 +130,23 @@ namespace eggsss
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (Keyboard.GetState().GetPressedKeys().FirstOrDefault() == Keys.Escape)
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 this.Exit();
 
-            // Update the player
-            UpdateCatcher(gameTime);
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                isPause = true;
 
-            // Update eggs
-            UpdateEggs(gameTime);
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
+                isPause = false;
 
+            if (!isPause)
+            {
+                // Update the player
+                UpdateCatcher(gameTime);
+
+                // Update eggs
+                UpdateEggs(gameTime);
+            }
             base.Update(gameTime);
         }
 
@@ -157,6 +167,15 @@ namespace eggsss
                 {
                     eggs.RemoveAt(i);
 
+                    // Add an explosion
+                    AddExplosion(eggs[i].Position);
+
+                    // Play the explosion sound
+                    //explosionSound.Play();
+
+                    //Add to the player's score
+                    score += eggs[i].Value;
+
                     AddCrushedEgg();
                 }
             }
@@ -164,29 +183,53 @@ namespace eggsss
 
         private void AddCrushedEgg()
         {
-            
+
         }
 
         private void UpdateCatcher(GameTime gameTime)
         {
-            var keyboardState = Keyboard.GetState();
             var state = CatcherState.Unknown;
+            if (kinectStartState == StartResult.KinectStarted)
+            {
+                var kinectState = kinect.GetCurrentGameState();
 
-            if (keyboardState.IsKeyDown(Keys.NumPad4))
-            {
-                state = CatcherState.TopLeft;
+                if (kinectState == GameState.SecondAreaSelected)
+                {
+                    state = CatcherState.TopLeft;
+                }
+                else if (kinectState == GameState.ThirdAreaSelected)
+                {
+                    state = CatcherState.TopRight;
+                }
+                else if (kinectState == GameState.FirstAreaSelected)
+                {
+                    state = CatcherState.BottomLeft;
+                }
+                else if (kinectState == GameState.FourthAreaSelected)
+                {
+                    state = CatcherState.BottomRight;
+                }
             }
-            else if (keyboardState.IsKeyDown(Keys.NumPad5))
+            else
             {
-                state = CatcherState.TopRight;
-            }
-            else if (keyboardState.IsKeyDown(Keys.NumPad1))
-            {
-                state = CatcherState.BottomLeft;
-            }
-            else if (keyboardState.IsKeyDown(Keys.NumPad2))
-            {
-                state = CatcherState.BottomRight;
+                var keyboardState = Keyboard.GetState();
+
+                if (keyboardState.IsKeyDown(Keys.NumPad4))
+                {
+                    state = CatcherState.TopLeft;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad5))
+                {
+                    state = CatcherState.TopRight;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad1))
+                {
+                    state = CatcherState.BottomLeft;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad2))
+                {
+                    state = CatcherState.BottomRight;
+                }
             }
 
             if (state != CatcherState.Unknown)
@@ -194,6 +237,12 @@ namespace eggsss
                 cather.Update(state);
             }
         }
+
+        private void AddExplosion(Vector2 position)
+        {
+            //throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -206,13 +255,14 @@ namespace eggsss
             // Start drawing
             spriteBatch.Begin();
 
+            spriteBatch.Draw(mainBackground, Vector2.Zero, Color.White);
+
             // Draw the Player
             cather.Draw(spriteBatch);
 
-            foreach (var egg in eggs)
-            {
-                egg.Draw(spriteBatch);
-            }
+            DrawText();
+
+            DrawEggs();
 
             //Stop drawing
             spriteBatch.End();
@@ -220,12 +270,28 @@ namespace eggsss
             base.Draw(gameTime);
         }
 
+        private void DrawEggs()
+        {
+            foreach (var egg in eggs)
+            {
+                egg.Draw(spriteBatch);
+            }
+        }
+
+        private void DrawText()
+        {
+            // Draw the score
+            spriteBatch.DrawString(font, "score: " + score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y), Color.White);
+            // Draw the player health
+            spriteBatch.DrawString(font, "health: " + cather.Health, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.White);
+        }
+
         private void AddEgg(GameTime gameTime)
         {
             var egg = new Egg();
             var textureSet = eggTextures[random.Next(3)];
             var eggPace = TimeSpan.FromMilliseconds(1000);
-            egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea, 
+            egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea,
                 textureSet, (CatcherState)random.Next(1, 4), gameTime.TotalGameTime, eggPace);
             eggs.Add(egg);
         }

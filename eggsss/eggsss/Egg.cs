@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -11,9 +8,11 @@ namespace eggsss
     {
         private Vector2 stepDelta;
         private Texture2D[] textures;
-        private Vector2 position { get; set; }
+        public Vector2 Position { get; set; }
         private TimeSpan lastStepTime;
         private TimeSpan pace;
+        public int Value { get; set; }
+        public bool Active { get; set; }
 
         public int StepNumber
         {
@@ -41,16 +40,16 @@ namespace eggsss
             switch (trayNumber)
             {
                 case CatcherState.TopLeft:
-                    position = new Vector2(100, 100);
+                    Position = new Vector2(100, 100);
                     break;
                 case CatcherState.TopRight:
-                    position = new Vector2(400, 100);
+                    Position = new Vector2(400, 100);
                     break;
                 case CatcherState.BottomRight:
-                    position = new Vector2(400, 400);
+                    Position = new Vector2(400, 400);
                     break;
                 case CatcherState.BottomLeft:
-                    position = new Vector2(100, 400);
+                    Position = new Vector2(100, 400);
                     break;
             }
 
@@ -64,7 +63,7 @@ namespace eggsss
             {
                 lastStepTime = gameTime.TotalGameTime;
                 StepNumber++;
-                position += stepDelta;
+                Position += stepDelta;
 
                 if (StepNumber > 4)
                 {
@@ -78,7 +77,7 @@ namespace eggsss
             if (!Crushed)
             {
                 var texture = textures[StepNumber];
-                spriteBatch.Draw(texture, position, Color.White);
+                spriteBatch.Draw(texture, Position, Color.White);
             }
         }
     }
