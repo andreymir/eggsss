@@ -41,6 +41,12 @@ namespace eggsss
         int prevScore;
         SpriteFont font;
 
+        // Buttons
+        private Button newGameButton;
+        private Button pauseButton;
+        private Button continueButton;
+        private Button exitButton;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -50,15 +56,14 @@ namespace eggsss
                                PreferredBackBufferWidth = 1280
                            };
             Content.RootDirectory = "Content";
+
+            newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 750));
+            //pauseButton = CreateButtonSprite(Resources.Pause);
+            //continueButton = CreateButtonSprite(Resources.Continue);
+            //exitButton = CreateButtonSprite(Resources.Exit);
         }
 
         protected override void Initialize()
-        {
-            Start();
-            base.Initialize();
-        }
-
-        private void Start()
         {
             cather = new Catcher();
             moveSounds = new SoundEffect[4];
@@ -76,6 +81,13 @@ namespace eggsss
             eggPace = TimeSpan.FromSeconds(1);
 
             base.Initialize();
+        }
+
+        private Button CreateButtonSprite(string text, Vector2 position)
+        {
+            var button = new Button(this, text, position);
+            Components.Add(button);
+            return button;
         }
 
         protected override void LoadContent()
@@ -365,15 +377,19 @@ namespace eggsss
 
             // Draw the Player
             cather.Draw(spriteBatch);
-
             DrawText();
-
             DrawEggs();
+            DrawButtons();
 
             //Stop drawing
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void DrawButtons()
+        {
+            //spriteBatch.Draw
         }
 
         private void DrawEggs()
