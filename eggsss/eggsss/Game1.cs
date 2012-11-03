@@ -22,7 +22,6 @@ namespace eggsss
         private Catcher cather;
         private Health health;
         private Texture2D mainBackground;
-        private bool isPause;
         private Random random;
 
         private Texture2D[][] eggTextures;
@@ -44,6 +43,15 @@ namespace eggsss
         SpriteFont font;
         private Vector2 playerPosition;
 
+        // Buttons
+        private Button newGameButton;
+        private Button pauseButton;
+        private Button continueButton;
+        private Button exitButton;
+
+        // Pause
+        private bool paused;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -53,15 +61,15 @@ namespace eggsss
                                PreferredBackBufferWidth = 1280
                            };
             Content.RootDirectory = "Content";
+
+            newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 750));
+            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(238, 750));
+            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(238, 750));
+            continueButton.Visible = false;
+            exitButton = CreateButtonSprite(Resources.Exit, new Vector2(1072, 750));
         }
 
         protected override void Initialize()
-        {
-            Start();
-            base.Initialize();
-        }
-
-        private void Start()
         {
             cather = new Catcher();
             health = new Health();
@@ -81,6 +89,13 @@ namespace eggsss
             eggPace = TimeSpan.FromSeconds(1);
 
             base.Initialize();
+        }
+
+        private Button CreateButtonSprite(string text, Vector2 position)
+        {
+            var button = new Button(this, text, position);
+            Components.Add(button);
+            return button;
         }
 
         protected override void LoadContent()
@@ -175,17 +190,30 @@ namespace eggsss
         protected override void Update(GameTime gameTime)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                isPause = true;
+            {
+                paused = true;
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
-                isPause = false;
-
-            if (isPause)
             {
+                paused = false;
+            }
+
+            if (paused)
+            {
+                pauseButton.Visible = false;
+                continueButton.Visible = true;
                 return;
+            }
+            else
+            {
+                pauseButton.Visible = true;
+                continueButton.Visible = false;
             }
 
             UpdateCatcher(gameTime);
@@ -391,9 +419,7 @@ namespace eggsss
 
             // Draw the Player
             cather.Draw(spriteBatch);
-
             DrawText();
-
             DrawEggs();
 
             // Draw the explosions
