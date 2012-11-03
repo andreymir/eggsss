@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using KinectActionCapture;
+using KinectActionCapture.Game;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
