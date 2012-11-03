@@ -13,8 +13,8 @@ namespace eggsss
 {
     public class Game1 : Game
     {
-        private const int MIN_EGG_SPAWN_TIME = 1000;
-        private const int MAX_EGG_PACE = 400;
+        private const int MIN_EGG_SPAWN_TIME = 1500;
+        private const int MAX_EGG_PACE = 500;
         private const int MAX_EGG_COUNT = 8;
 
         private SoundEffect[] moveSounds;
@@ -76,18 +76,13 @@ namespace eggsss
             health = new Health();
             moveSounds = new SoundEffect[4];
             crushedEggTextures = new Texture2D[2];
-            score = 0;
             random = new Random();
             eggs = new List<Egg>();
             crushedEggs = new List<CrushedEgg>(5);
             kinect = new KinectManager();
             kinectStartState = kinect.StartKinect();
 
-            // Initial egg spawn time
-            eggSpawnTime = TimeSpan.FromSeconds(4);
-            previousEggTime = TimeSpan.FromSeconds(-3);
-            // Initial egg pace
-            eggPace = TimeSpan.FromSeconds(1);
+            this.Restart();
 
             base.Initialize();
         }
@@ -313,12 +308,16 @@ namespace eggsss
             var t = TimeSpan.FromMilliseconds(MIN_EGG_SPAWN_TIME);
             if (score % 5f == 0 && eggSpawnTime > t)
             {
-                eggSpawnTime = eggSpawnTime.Subtract(TimeSpan.FromMilliseconds(1000));
-
+                eggSpawnTime = eggSpawnTime.Subtract(TimeSpan.FromMilliseconds(500));
                 if (eggSpawnTime < t)
                 {
                     eggSpawnTime = t;
                 }
+            }
+            else if (score > 100 && eggSpawnTime > TimeSpan.FromMilliseconds(1000))
+            {
+                // More eggs!!!
+                eggSpawnTime = TimeSpan.FromMilliseconds(1000);
             }
 
             t = TimeSpan.FromMilliseconds(MAX_EGG_PACE);
@@ -338,18 +337,30 @@ namespace eggsss
                     }
                 }
             }
+            else if (score > 150 && eggPace > TimeSpan.FromMilliseconds(400))
+            {
+                // Fast eggs!!!
+                eggPace = TimeSpan.FromMilliseconds(400);
+            }
 
-            //eggSpawnTime = TimeSpan.FromMilliseconds(900);
-            //eggPace = TimeSpan.FromMilliseconds(300);
+            //eggSpawnTime = TimeSpan.FromMilliseconds(1000);
+            //eggPace = TimeSpan.FromMilliseconds(400);
 
             Debug.Print("Level up! Spawn time: {0}; Egg pace: {1}", eggSpawnTime, eggPace);
         }
 
         private void Restart()
         {
+            // Initial egg spawn time
+            eggSpawnTime = TimeSpan.FromSeconds(4);
+            previousEggTime = TimeSpan.FromSeconds(-3);
+            // Initial egg pace
+            eggPace = TimeSpan.FromSeconds(1);
+
             score = 0;
             health.Clear();
             eggs.Clear();
+            crushedEggs.Clear();
         }
 
         private void AddCrushedEgg(GameTime gameTime, CatcherState position)
