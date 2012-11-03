@@ -16,9 +16,14 @@ namespace eggsss
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
         private Catcher cather;
+        private Random random;
+        private Texture2D[][] eggTextures;
+        private List<Egg> eggs;
+        private TimeSpan eggSpawnTime;
+        private TimeSpan previousEggTime;
 
         public Game1()
         {
@@ -34,10 +39,13 @@ namespace eggsss
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             //Initialize the player class
             cather = new Catcher();
+            random = new Random();
+            eggs = new List<Egg>();
+
+            // Initial egg spawn time
+            eggSpawnTime = new TimeSpan(2 * TimeSpan.TicksPerSecond); // 2 seconds
 
             base.Initialize();
         }
@@ -66,7 +74,41 @@ namespace eggsss
             playerPosition,
             CatcherState.TopLeft);
 
-            // TODO: use this.Content to load your game content here
+            eggTextures = new[]
+            {
+                new []
+                {
+                    Content.Load<Texture2D>("0-0"),
+                    Content.Load<Texture2D>("0-1"),
+                    Content.Load<Texture2D>("0-2"),
+                    Content.Load<Texture2D>("0-3"),
+                    Content.Load<Texture2D>("0-4"),
+                },
+                new []
+                {
+                    Content.Load<Texture2D>("1-0"),
+                    Content.Load<Texture2D>("1-1"),
+                    Content.Load<Texture2D>("1-2"),
+                    Content.Load<Texture2D>("1-3"),
+                    Content.Load<Texture2D>("1-4"),
+                },
+                new []
+                {
+                    Content.Load<Texture2D>("2-0"),
+                    Content.Load<Texture2D>("2-1"),
+                    Content.Load<Texture2D>("2-2"),
+                    Content.Load<Texture2D>("2-3"),
+                    Content.Load<Texture2D>("2-4"),
+                },
+                new []
+                {
+                    Content.Load<Texture2D>("3-0"),
+                    Content.Load<Texture2D>("3-1"),
+                    Content.Load<Texture2D>("3-2"),
+                    Content.Load<Texture2D>("3-3"),
+                    Content.Load<Texture2D>("3-4"),
+                },
+            };
         }
 
         /// <summary>
@@ -89,15 +131,40 @@ namespace eggsss
             if (Keyboard.GetState().GetPressedKeys().FirstOrDefault() == Keys.Escape)
                 this.Exit();
 
-            // Read the current state of the keyboard and gamepad and store it
-            //currentKeyboardState = Keyboard.GetState();
-
-
-            //Update the player
+            // Update the player
             UpdateCatcher(gameTime);
 
+            // Update eggs
+            UpdateEggs(gameTime);
 
             base.Update(gameTime);
+        }
+
+        private void UpdateEggs(GameTime gameTime)
+        {
+            if (gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
+            {
+                AddEgg();
+                previousEggTime = eggSpawnTime;
+            }
+
+            for (int i = eggs.Count - 1; i >= 0; i--)
+            {
+                var egg = eggs[i];
+                egg.Update(gameTime);
+
+                if (egg.Crushed)
+                {
+                    eggs.RemoveAt(i);
+
+                    AddCrushedEgg();
+                }
+            }
+        }
+
+        private void AddCrushedEgg()
+        {
+            
         }
 
         private void UpdateCatcher(GameTime gameTime)
@@ -126,38 +193,6 @@ namespace eggsss
             {
                 cather.Update(state);
             }
-
-            //// Get Thumbstick Controls
-            //player.Position.X += currentGamePadState.ThumbSticks.Left.X * playerMoveSpeed;
-            //player.Position.Y -= currentGamePadState.ThumbSticks.Left.Y * playerMoveSpeed;
-
-            //// Use the Keyboard / Dpad
-            //if (currentKeyboardState.IsKeyDown(Keys.Left) ||
-            //currentGamePadState.DPad.Left == ButtonState.Pressed)
-            //{
-            //    player.Position.X -= playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Right) ||
-            //currentGamePadState.DPad.Right == ButtonState.Pressed)
-            //{
-            //    player.Position.X += playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Up) ||
-            //currentGamePadState.DPad.Up == ButtonState.Pressed)
-            //{
-            //    player.Position.Y -= playerMoveSpeed;
-            //}
-            //if (currentKeyboardState.IsKeyDown(Keys.Down) ||
-            //currentGamePadState.DPad.Down == ButtonState.Pressed)
-            //{
-            //    player.Position.Y += playerMoveSpeed;
-            //}
-
-
-            //// Make sure that the player does not go out of bounds
-            //player.Position.X = MathHelper.Clamp(player.Position.X, 0, GraphicsDevice.Viewport.Width - player.Width);
-            //player.Position.Y = MathHelper.Clamp(player.Position.Y, 0, GraphicsDevice.Viewport.Height - player.Height);
-
         }
 
         /// <summary>
@@ -178,6 +213,14 @@ namespace eggsss
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void AddEgg()
+        {
+            var egg = new Egg();
+            var textureSet = eggTextures[random.Next(3)];
+            egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea, textureSet, random.Next(3));
+            eggs.Add(egg);
         }
     }
 }
