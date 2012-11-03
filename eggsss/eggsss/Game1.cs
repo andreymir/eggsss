@@ -454,6 +454,15 @@ namespace eggsss
         {
             // Draw the score
             spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
+
+            if (paused)
+                spriteBatch.DrawString(continueButton.Font, kinectStartState.ToString(),
+                                       new Vector2(
+                                           GraphicsDevice.Viewport.TitleSafeArea.X +
+                                           GraphicsDevice.Viewport.TitleSafeArea.Width/1.5f,
+                                           GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height - 50), Color.Black);
+
+            spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
         }
 
         private void AddEgg(GameTime gameTime)
