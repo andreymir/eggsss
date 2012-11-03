@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 
@@ -23,7 +24,7 @@ namespace eggsss
 
         public bool Crushed;
 
-        public void Initialize(Rectangle window, Texture2D[] textures, CatcherState trayNumber, TimeSpan createTime, TimeSpan pace)
+        public void Initialize(Rectangle window, Texture2D[] textures, SoundEffect[] soundEffects, CatcherState trayNumber, TimeSpan createTime, TimeSpan pace)
         {
             this.textures = textures;
             lastStepTime = createTime;

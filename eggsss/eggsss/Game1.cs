@@ -10,6 +10,7 @@ namespace eggsss
 {
     public class Game1 : Game
     {
+        private SoundEffect[] moveSounds;
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Catcher cather;
@@ -22,10 +23,6 @@ namespace eggsss
         private TimeSpan previousEggTime;
         private SoundEffect catchSound;
         private SoundEffect crashSound;
-        private SoundEffect moveSound0;
-        private SoundEffect moveSound1;
-        private SoundEffect moveSound2;
-        private SoundEffect moveSound3;
         private SoundEffect gameOverSound;
         private KinectManager kinect;
         private StartResult kinectStartState;
@@ -48,6 +45,7 @@ namespace eggsss
         private void Start()
         {
             cather = new Catcher();
+            moveSounds = new SoundEffect[4];
             score = 0;
             random = new Random();
             eggs = new List<Egg>();
@@ -118,10 +116,10 @@ namespace eggsss
 
             catchSound = Content.Load<SoundEffect>("sound/catchSound");
             crashSound = Content.Load<SoundEffect>("sound/crashSound");
-            moveSound0 = Content.Load<SoundEffect>("sound/moveSound0");
-            moveSound1 = Content.Load<SoundEffect>("sound/moveSound1");
-            moveSound2 = Content.Load<SoundEffect>("sound/moveSound2");
-            moveSound3 = Content.Load<SoundEffect>("sound/moveSound3");
+            moveSounds[0] = Content.Load<SoundEffect>("sound/moveSound0");
+            moveSounds[1] = Content.Load<SoundEffect>("sound/moveSound1");
+            moveSounds[2] = Content.Load<SoundEffect>("sound/moveSound2");
+            moveSounds[3] = Content.Load<SoundEffect>("sound/moveSound3");
             gameOverSound = Content.Load<SoundEffect>("sound/gameOverSound");
         }
 
@@ -309,7 +307,7 @@ namespace eggsss
             var textureSet = eggTextures[random.Next(3)];
             var eggPace = TimeSpan.FromMilliseconds(1000);
             egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea,
-                textureSet, (CatcherState)random.Next(1, 4), gameTime.TotalGameTime, eggPace);
+                textureSet, moveSounds, (CatcherState)random.Next(1, 4), gameTime.TotalGameTime, eggPace);
             eggs.Add(egg);
         }
     }
