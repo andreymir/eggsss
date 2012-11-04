@@ -1,9 +1,10 @@
 ﻿namespace eggsss
 {
-    enum EggGameState
+    public enum EggGameState
     {
         Game,
         Pause,
+        GameOver,
         Exit
     }
 }

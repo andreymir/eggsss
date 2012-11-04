@@ -52,7 +52,7 @@ namespace eggsss
         private Button exitButton;
 
         // Pause
-        private EggGameState eggGameState;
+        protected static EggGameState eggGameState { get; private set; }
 
         public Game1()
         {
@@ -63,6 +63,7 @@ namespace eggsss
                                PreferredBackBufferWidth = 1024
                            };
             Content.RootDirectory = "Content";
+            eggGameState = EggGameState.Game;
 
             newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 710));
             pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(346, 710));
@@ -83,7 +84,7 @@ namespace eggsss
             kinect = new KinectManager();
             kinectStartState = kinect.StartKinect();
             highScore.Initialize();
-            this.Restart();
+            Restart();
 
             base.Initialize();
         }
@@ -192,17 +193,22 @@ namespace eggsss
                 Exit();
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(Keys.N))
+            {
+                Restart();
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && eggGameState != EggGameState.GameOver)
             {
                 Pause();
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.P))
+            if (Keyboard.GetState().IsKeyDown(Keys.P) && eggGameState != EggGameState.GameOver)
             {
                 eggGameState = EggGameState.Game;
             }
 
-            if (kinectStartState == StartResult.ManyKinectsDetected || kinectStartState == StartResult.KinectError)
+            if ((kinectStartState == StartResult.ManyKinectsDetected || kinectStartState == StartResult.KinectError)  && eggGameState != EggGameState.GameOver)
                 Pause();
 
             if (kinectStartState == StartResult.KinectStarted)
@@ -217,10 +223,12 @@ namespace eggsss
                         Exit();
                         break;
                     case VoiceCommand.Pause:
-                        Pause();
+                        if(eggGameState != EggGameState.GameOver)
+                            Pause();
                         break;
                     case VoiceCommand.Continue:
-                        eggGameState = EggGameState.Game;
+                        if (eggGameState != EggGameState.GameOver)
+                            eggGameState = EggGameState.Game;
                         break;
                 }
             }
@@ -229,7 +237,10 @@ namespace eggsss
             {
                 pauseButton.Visible = false;
                 continueButton.Visible = true;
-                return;
+            }
+            else if (eggGameState == EggGameState.GameOver)
+            {
+                continueButton.Visible = pauseButton.Visible = false;
             }
             else
             {
@@ -237,11 +248,18 @@ namespace eggsss
                 continueButton.Visible = false;
             }
 
-            UpdateCatcher(gameTime);
-            UpdateEggs(gameTime);
+            if (eggGameState == EggGameState.Game)
+            {
+                UpdateCatcher(gameTime);
+                UpdateEggs(gameTime);
+            }
+            
             UpdateCrushedEggs(gameTime);
 
-            base.Update(gameTime);
+            if (eggGameState == EggGameState.Game)
+            {
+                base.Update(gameTime);
+            }
         }
 
         private void Pause()
@@ -309,7 +327,7 @@ namespace eggsss
                 Debug.Print("Game over!");
 
                 gameOverSound.Play();
-                Restart();
+                eggGameState = EggGameState.GameOver;
             }
         }
 
@@ -371,6 +389,7 @@ namespace eggsss
             health.Clear();
             eggs.Clear();
             crushedEggs.Clear();
+            eggGameState = EggGameState.Game;
         }
 
         private void AddCrushedEgg(GameTime gameTime, CatcherState position)
@@ -403,7 +422,7 @@ namespace eggsss
                         break;
                 }
             }
-            else
+            //else
             {
                 var keyboardState = Keyboard.GetState();
 
