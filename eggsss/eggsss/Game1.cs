@@ -270,7 +270,7 @@ namespace eggsss
                     if (egg.Crushed)
                     {
                         AddCrushedEgg(gameTime, eggs[i].TrayNumber);
-                        eggs.RemoveAt(i);
+                        eggs.Clear();
                         health.Update();
                         crashSound.Play();
                     }
