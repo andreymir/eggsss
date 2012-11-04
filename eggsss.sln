@@ -3,20 +3,46 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eggsss", "eggsss\eggsss\eggsss.csproj", "{44FB6891-9B12-49E0-BB6F-4FDE42A67683}"
 EndProject
-Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "eggsssContent", "eggsss\eggsssContent\eggsssContent.contentproj", "{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eggsssContent", "eggsss\eggsssContent\eggsssContent.contentproj", "{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectActionCapture", "KinectActionCapture\KinectActionCapture.csproj", "{F670C2C5-E400-4151-9EF2-FD17343F61E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Debug|x86.ActiveCfg = Debug|x86
 		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Debug|x86.Build.0 = Debug|x86
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Release|Any CPU.ActiveCfg = Release|x86
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Release|Mixed Platforms.Build.0 = Release|x86
 		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Release|x86.ActiveCfg = Release|x86
 		{44FB6891-9B12-49E0-BB6F-4FDE42A67683}.Release|x86.Build.0 = Release|x86
+		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Debug|x86.ActiveCfg = Debug|x86
+		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Release|Any CPU.ActiveCfg = Release|x86
+		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{07B2B904-886D-4FFF-8FC0-CAE086BBCA19}.Release|x86.ActiveCfg = Release|x86
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F670C2C5-E400-4151-9EF2-FD17343F61E6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

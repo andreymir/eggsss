@@ -251,15 +251,13 @@ namespace eggsss
 
         private void UpdateEggs(GameTime gameTime)
         {
-            // Add new egg
-            if (eggs.Count <= 8 & gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
+            if (eggs.Count <= MAX_EGG_COUNT & gameTime.TotalGameTime - previousEggTime > eggSpawnTime)
             {
                 AddEgg(gameTime);
                 previousEggTime = gameTime.TotalGameTime;
             }
 
-            // Check eggs
-            for (int i = eggs.Count - 1; i >= 0; i--)
+            for (var i = eggs.Count - 1; i >= 0; i--)
             {
                 var egg = eggs[i];
 
@@ -300,9 +298,7 @@ namespace eggsss
             {
                 crushedEggs[i].Update(gameTime);
                 if (crushedEggs[i].Active == false)
-                {
                     crushedEggs.RemoveAt(i);
-                }
             }
         }
 
