@@ -14,7 +14,7 @@ namespace eggsss
 
         int elapsedTime;
         private const int FRAME_TIME = 30;
-        int frameCount = 3;
+        private const int FRAME_COUNT = 3;
         int currentFrame;
 
         public bool Active;
@@ -44,7 +44,7 @@ namespace eggsss
             {
                 currentFrame++;
 
-                if (currentFrame == frameCount)
+                if (currentFrame == FRAME_COUNT)
                 {
                     currentFrame = 0;
                     Active = false;
@@ -55,7 +55,6 @@ namespace eggsss
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            // Only draw the animation when we are active
             if (Active)
             {
                 Texture2D texture = null;
@@ -66,12 +65,12 @@ namespace eggsss
                     case CatcherState.TopLeft:
                     case CatcherState.BottomLeft:
                         texture = Texture[0];
-                        position = Position + new Vector2(- texture.Width - 250, - texture.Height - 60);
+                        position = Position + new Vector2(- texture.Width - 200, - texture.Height - 100);
                         break;
                     case CatcherState.TopRight:
                     case CatcherState.BottomRight:
                         texture = Texture[1];
-                        position = Position + new Vector2(texture.Width + 180, - texture.Height - 60);
+                        position = Position + new Vector2(texture.Width + 100, - texture.Height - 100);
                         break;
                 }
 

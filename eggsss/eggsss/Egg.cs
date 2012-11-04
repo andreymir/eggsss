@@ -37,27 +37,27 @@ namespace eggsss
             {
                 case CatcherState.BottomLeft:
                 case CatcherState.TopLeft:
-                    stepDelta = new Vector2(30, 20);
+                    stepDelta = new Vector2(25, 18);
                     break;
                 case CatcherState.BottomRight:
                 case CatcherState.TopRight:
-                    stepDelta = new Vector2(-30, 20);
+                    stepDelta = new Vector2(-25, 18);
                     break;
             }
 
             switch (trayNumber)
             {
                 case CatcherState.TopLeft:
-                    Position = new Vector2(150, 300);
+                    Position = new Vector2(150, 270);
                     break;
                 case CatcherState.TopRight:
-                    Position = new Vector2(1100, 300);
+                    Position = new Vector2(850, 270);
                     break;
                 case CatcherState.BottomRight:
-                    Position = new Vector2(1100, 500);
+                    Position = new Vector2(900, 390);
                     break;
                 case CatcherState.BottomLeft:
-                    Position = new Vector2(150, 500);
+                    Position = new Vector2(100, 390);
                     break;
             }
 

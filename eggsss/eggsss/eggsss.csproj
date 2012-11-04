@@ -80,7 +80,9 @@
     <Compile Include="CatcherState.cs" />
     <Compile Include="CrushedEgg.cs" />
     <Compile Include="Egg.cs" />
+    <Compile Include="GameState.cs" />
     <Compile Include="Health.cs" />
+    <Compile Include="HighScore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />

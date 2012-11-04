@@ -40,34 +40,35 @@ namespace eggsss
         private KinectManager kinect;
         private StartResult kinectStartState;
 
-        int score;
+        private int score;
+        private readonly HighScoreData highScore = new HighScoreData();
         SpriteFont font;
         private Vector2 playerPosition;
 
         // Buttons
         private Button newGameButton;
-        private Button pauseButton;
-        private Button continueButton;
+        private readonly Button pauseButton;
+        private readonly Button continueButton;
         private Button exitButton;
 
         // Pause
-        private bool paused;
+        private EggGameState eggGameState;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
                            {
                                IsFullScreen = false,
-                               PreferredBackBufferHeight = 800,
-                               PreferredBackBufferWidth = 1280
+                               PreferredBackBufferHeight = 768,
+                               PreferredBackBufferWidth = 1024
                            };
             Content.RootDirectory = "Content";
 
-            newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 750));
-            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(346, 750));
-            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(346, 750));
+            newGameButton = CreateButtonSprite(Resources.NewGame, new Vector2(50, 710));
+            pauseButton = CreateButtonSprite(Resources.Pause, new Vector2(346, 710));
+            continueButton = CreateButtonSprite(Resources.Continue, new Vector2(346, 710));
             continueButton.Visible = false;
-            exitButton = CreateButtonSprite(Resources.Exit, new Vector2(1072, 750));
+            exitButton = CreateButtonSprite(Resources.Exit, new Vector2(800, 710));
         }
 
         protected override void Initialize()
@@ -81,7 +82,7 @@ namespace eggsss
             crushedEggs = new List<CrushedEgg>(5);
             kinect = new KinectManager();
             kinectStartState = kinect.StartKinect();
-
+            highScore.Initialize();
             this.Restart();
 
             base.Initialize();
@@ -175,6 +176,7 @@ namespace eggsss
         /// </summary>
         protected override void UnloadContent()
         {
+            highScore.SaveHighScore();
             kinect.StopKinect();
         }
 
@@ -192,16 +194,16 @@ namespace eggsss
 
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                paused = true;
+                Pause();
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.P))
             {
-                paused = false;
+                eggGameState = EggGameState.Game;
             }
 
             if (kinectStartState == StartResult.ManyKinectsDetected || kinectStartState == StartResult.KinectError)
-                paused = true;
+                Pause();
 
             if (kinectStartState == StartResult.KinectStarted)
             {
@@ -215,15 +217,15 @@ namespace eggsss
                         Exit();
                         break;
                     case VoiceCommand.Pause:
-                        paused = true;
+                        Pause();
                         break;
                     case VoiceCommand.Continue:
-                        paused = false;
+                        eggGameState = EggGameState.Game;
                         break;
                 }
             }
 
-            if (paused)
+            if (eggGameState == EggGameState.Pause)
             {
                 pauseButton.Visible = false;
                 continueButton.Visible = true;
@@ -242,6 +244,11 @@ namespace eggsss
             base.Update(gameTime);
         }
 
+        private void Pause()
+        {
+            eggGameState = EggGameState.Pause;
+        }
+
         private void UpdateEggs(GameTime gameTime)
         {
             // Add new egg
@@ -256,11 +263,11 @@ namespace eggsss
             {
                 var egg = eggs[i];
 
-                if (egg.StepNumber == 4 && egg.TrayNumber == cather.State) // ?????
+                if (egg.StepNumber == 4 && egg.TrayNumber == cather.State) // catch egg
                 {
                     eggs.RemoveAt(i);
                     catchSound.Play();
-                    score++;
+                    SetScore();
                     UpdateSpeed();
                 }
                 else
@@ -278,6 +285,13 @@ namespace eggsss
             }
 
             CheckGameOver();
+        }
+
+        private void SetScore()
+        {
+            score++;
+            if (score > highScore.Score)
+                highScore.Score = score;
         }
 
         private void UpdateCrushedEggs(GameTime gameTime)
@@ -369,7 +383,6 @@ namespace eggsss
             crushedEgg.Initialize(crushedEggTextures, playerPosition, position, gameTime.TotalGameTime);
             crushedEggs.Add(crushedEgg);
         }
-
 
         private void UpdateCatcher(GameTime gameTime)
         {
@@ -465,23 +478,16 @@ namespace eggsss
         private void DrawText()
         {
             // Draw the score
-            spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
+            spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2 + 100, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), new Color(43,42,41));
 
-            if (paused)
-                spriteBatch.DrawString(continueButton.Font, kinectStartState.ToString(),
-                                       new Vector2(
-                                           GraphicsDevice.Viewport.TitleSafeArea.X +
-                                           GraphicsDevice.Viewport.TitleSafeArea.Width/1.5f,
-                                           GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height - 50), Color.Black);
-
-            spriteBatch.DrawString(font, score.ToString(), new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + 30), Color.Black);
+            spriteBatch.DrawString(font, "Top:" + highScore.Score, new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + 100 , GraphicsDevice.Viewport.TitleSafeArea.Y + 30), new Color(43,42,41));
         }
 
         private void AddEgg(GameTime gameTime)
         {
             var egg = new Egg();
             var textureSet = eggTextures[random.Next(3)];
-            var eggPace = TimeSpan.FromMilliseconds(1000);
+            var pace = TimeSpan.FromMilliseconds(1000);
             CatcherState trayNumber;
             do
             {
@@ -490,7 +496,7 @@ namespace eggsss
             while (trayNumber == prevTrayNumber);
 
             egg.Initialize(GraphicsDevice.Viewport.TitleSafeArea,
-                textureSet, moveSounds, trayNumber, gameTime.TotalGameTime, eggPace);
+                textureSet, moveSounds, trayNumber, gameTime.TotalGameTime, pace);
             eggs.Add(egg);
             prevTrayNumber = trayNumber;
         }

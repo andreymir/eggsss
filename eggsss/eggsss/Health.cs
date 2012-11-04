@@ -12,7 +12,7 @@ namespace eggsss
 
         // Position of the Player relative to the upper left side of the screen
         public Vector2 Position;
-        private readonly Vector2 stepDelta = new Vector2(100, 0);
+        private readonly Vector2 stepDelta = new Vector2(80, 0);
 
         // State of the player
         public bool Active;
