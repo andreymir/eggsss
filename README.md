@@ -3,4 +3,4 @@ eggsss
 
 The coolest game EVER!
 
-A hackaton project.
+A hackaton project. Uses kinect to catch eggs.
