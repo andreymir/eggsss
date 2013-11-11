@@ -1,6 +1,6 @@
-34234234eggsss
+eggsss
 ======
 
 The coolest game EVER!
 
-sdfsdaf
+A hackaton project.
